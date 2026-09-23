@@ -39,3 +39,31 @@ A dash (—) means that no valid transition is defined for that event in the sta
 - The robot keeps the assigned destination while it moves between NAVIGATING and AVOIDING_OBSTACLE.
 - Critical battery has priority over normal navigation and delivery progress.
 - A destination-reached event is accepted only from NAVIGATING.
+
+## Verification Activity
+
+### Check 1 — Invalid Transition: IDLE → DELIVERING
+
+**Result: Rejected.** This transition is not present in the valid-transition table. Allowing it would violate **R2** and **R3**, because the robot would deliver without first receiving a delivery request and navigating to the destination. The expected path is:
+
+
+a\
+IDLE → NAVIGATING → DELIVERING
+
+### Check 2 — Missing Transition: AVOIDING_OBSTACLE → NAVIGATING
+
+**Result: Defect identified if missing.** Without the **Obstacle Avoided** transition, the robot remains in **AVOIDING_OBSTACLE** and cannot continue toward the destination. It cannot legitimately reach the delivery process because **R6** requires the robot to return to **NAVIGATING** after the obstacle is cleared. The table includes T3 to prevent this deadlock.
+
+### Check 3 — Obstacle During Delivery
+
+**Result: Direct transition rejected.** The table does not allow **AVOIDING_OBSTACLE → DELIVERING**. The robot must first complete obstacle handling, return to **NAVIGATING**, and then reach the destination before **DELIVERING** is allowed. This enforces **R7** and prevents delivery from starting while obstacle handling is active.
+
+## Verification Summary
+
+| Verification check | Expected outcome | Status |
+|---|---|---|
+| IDLE → DELIVERING | Must be rejected | PASS |
+| AVOIDING_OBSTACLE without return transition | Must expose a navigation deadlock | PASS — T3 is present |
+| AVOIDING_OBSTACLE → DELIVERING | Must be rejected | PASS |
+
+The transition table is consistent with the ten requirements and explicitly records the important invalid behaviors.
