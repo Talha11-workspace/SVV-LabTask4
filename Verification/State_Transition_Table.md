@@ -47,7 +47,6 @@ A dash (—) means that no valid transition is defined for that event in the sta
 **Result: Rejected.** This transition is not present in the valid-transition table. Allowing it would violate **R2** and **R3**, because the robot would deliver without first receiving a delivery request and navigating to the destination. The expected path is:
 
 
-a\
 IDLE → NAVIGATING → DELIVERING
 
 ### Check 2 — Missing Transition: AVOIDING_OBSTACLE → NAVIGATING
